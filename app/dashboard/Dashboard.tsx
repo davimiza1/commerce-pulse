@@ -16,6 +16,7 @@ import {
 
 type Range = "7 days" | "30 days" | "90 days";
 type Category = "All categories" | "Apparel" | "Accessories" | "Footwear";
+type DashboardStats = { revenue: number; orders: number; customers: number; products: number };
 
 const datasets: Record<Range, { day: string; revenue: number; orders: number }[]> = {
   "7 days": [
@@ -59,12 +60,14 @@ const channels = [
 ];
 
 const navItems = [
-  { label: "Overview", icon: LayoutDashboard }, { label: "Orders", icon: ShoppingBag },
-  { label: "Products", icon: Box }, { label: "Customers", icon: Users },
-  { label: "Payments", icon: CreditCard },
+  { label: "Overview", icon: LayoutDashboard, href: "/dashboard" },
+  { label: "Orders", icon: ShoppingBag, href: "/dashboard/orders" },
+  { label: "Products", icon: Box, href: "/dashboard/products" },
+  { label: "Customers", icon: Users, href: "/dashboard/customers" },
+  { label: "Payments", icon: CreditCard, href: "/dashboard/payments" },
 ];
 
-export default function Home() {
+export default function Home({ stats }: { stats: DashboardStats }) {
   const router = useRouter();
   const [dark, setDark] = useState(false);
   const [range, setRange] = useState<Range>("30 days");
@@ -97,7 +100,7 @@ export default function Home() {
     <main className={dark ? "dashboard dark" : "dashboard"}>
       <aside className={sidebarOpen ? "sidebar open" : "sidebar"}>
         <div className="wordmark"><span><TrendingUp size={19} /></span><strong>Commerce<span>Pulse</span></strong><button onClick={() => setSidebarOpen(false)}><X size={17} /></button></div>
-        <nav>{navItems.map(({ label, icon: Icon }) => <button key={label} className={activeNav === label ? "active" : ""} onClick={() => { setActiveNav(label); setSidebarOpen(false); flash(`${label} view selected`); }}><Icon size={17} />{label}{label === "Orders" && <i>12</i>}</button>)}</nav>
+        <nav>{navItems.map(({ label, icon: Icon, href }) => <button key={label} className={activeNav === label ? "active" : ""} onClick={() => { setActiveNav(label); setSidebarOpen(false); router.push(href); }}><Icon size={17} />{label}{label === "Orders" && stats.orders > 0 && <i>{stats.orders}</i>}</button>)}</nav>
         <div className="sidebar-bottom"><div className="upgrade"><Sparkles size={17} /><strong>Unlock deeper insights</strong><p>Connect more stores and compare performance.</p><button onClick={() => flash("Upgrade preview opened")}>View upgrade</button></div><button className={activeNav === "Settings" ? "active" : ""} onClick={() => setActiveNav("Settings")}><Settings size={17} />Settings</button><div className="profile-row"><span>MD</span><div><strong>Muhammad Dawood</strong><small>Store owner</small></div><button aria-label="Sign out" title="Sign out" onClick={signOut}><LogOut size={15} /></button></div></div>
       </aside>
 
@@ -112,10 +115,10 @@ export default function Home() {
           <div className="page-heading"><div><span>Wednesday, July 29</span><h1>Good afternoon, Dawood</h1><p>Here’s what’s happening with your store today.</p></div><div className="heading-actions"><label><CalendarDays size={15} /><select value={range} onChange={(e) => setRange(e.target.value as Range)}><option>7 days</option><option>30 days</option><option>90 days</option></select></label><button onClick={() => flash("Report exported successfully")}><Download size={15} />Export report</button></div></div>
 
           <section className="metrics">
-            <Metric icon={CircleDollarSign} label="Total revenue" value={range === "7 days" ? "$78,300" : range === "30 days" ? "$248,920" : "$596,420"} change="+18.2%" positive />
-            <Metric icon={ShoppingBag} label="Total orders" value={range === "7 days" ? "943" : range === "30 days" ? "3,482" : "8,124"} change="+12.5%" positive />
-            <Metric icon={Users} label="New customers" value={range === "7 days" ? "186" : range === "30 days" ? "648" : "1,592"} change="+8.4%" positive />
-            <Metric icon={PackageCheck} label="Conversion rate" value="3.84%" change="-0.6%" />
+            <Metric icon={CircleDollarSign} label="Collected revenue" value={`$${stats.revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} change="Live data" positive />
+            <Metric icon={ShoppingBag} label="Total orders" value={String(stats.orders)} change="Live data" positive />
+            <Metric icon={Users} label="Customers" value={String(stats.customers)} change="Live data" positive />
+            <Metric icon={PackageCheck} label="Products" value={String(stats.products)} change="Live data" positive />
           </section>
 
           <section className="chart-grid">
@@ -134,7 +137,7 @@ export default function Home() {
             <article className="panel inventory-panel"><header><div><h2>Inventory health</h2><p>Stock levels across products.</p></div></header><div className="inventory-score"><div><strong>84</strong><span>/100</span></div><p><strong>Healthy inventory</strong><span>3 products need attention</span></p></div><ResponsiveContainer width="100%" height={130}><BarChart data={[{name:"Healthy",value:68},{name:"Low",value:22},{name:"Out",value:10}]} layout="vertical"><XAxis type="number" hide/><YAxis type="category" dataKey="name" axisLine={false} tickLine={false} tick={{fontSize:10,fill:"#747d78"}} width={50}/><Tooltip/><Bar dataKey="value" radius={[0,6,6,0]}>{["#16745b","#d7a241","#c85a52"].map((color) => <Cell key={color} fill={color}/>)}</Bar></BarChart></ResponsiveContainer><button className="wide-action" onClick={() => flash("Inventory report opened")}><AlertTriangle size={14}/>Review low stock</button></article>
           </section>
 
-          <section className="panel orders-panel"><header><div><h2>Recent orders</h2><p>Latest purchases across all channels.</p></div><button onClick={() => { setActiveNav("Orders"); flash("All orders opened"); }}>View all orders</button></header><div className="table-head"><span>Order</span><span>Customer</span><span>Product</span><span>Date</span><span>Total</span><span>Status</span></div>{visibleOrders.map((order) => <button className="order-row" key={order.id} onClick={() => flash(`${order.id} details opened`)}><strong>{order.id}</strong><span className="customer"><i>{order.initials}</i>{order.customer}</span><span>{order.product}</span><span>{order.date}</span><strong>{order.total}</strong><span className={`status ${order.status.toLowerCase()}`}>{order.status}</span></button>)}</section>
+          <section className="panel orders-panel"><header><div><h2>Recent orders</h2><p>Latest purchases across all channels.</p></div><button onClick={() => router.push("/dashboard/orders")}>View all orders</button></header><div className="table-head"><span>Order</span><span>Customer</span><span>Product</span><span>Date</span><span>Total</span><span>Status</span></div>{visibleOrders.map((order) => <button className="order-row" key={order.id} onClick={() => router.push("/dashboard/orders")}><strong>{order.id}</strong><span className="customer"><i>{order.initials}</i>{order.customer}</span><span>{order.product}</span><span>{order.date}</span><strong>{order.total}</strong><span className={`status ${order.status.toLowerCase()}`}>{order.status}</span></button>)}</section>
         </div>
       </section>
       {sidebarOpen && <button className="overlay" aria-label="Close menu" onClick={() => setSidebarOpen(false)} />}
@@ -144,5 +147,5 @@ export default function Home() {
 }
 
 function Metric({ icon: Icon, label, value, change, positive = false }: { icon: typeof TrendingUp; label: string; value: string; change: string; positive?: boolean }) {
-  return <article><div className="metric-icon"><Icon size={18}/></div><span>{label}</span><strong>{value}</strong><small className={positive ? "positive" : "negative"}>{positive ? <ArrowUpRight size={12}/> : <ArrowDownRight size={12}/>} {change}<em> vs last period</em></small></article>;
+  return <article><div className="metric-icon"><Icon size={18}/></div><span>{label}</span><strong>{value}</strong><small className={positive ? "positive" : "negative"}>{positive ? <ArrowUpRight size={12}/> : <ArrowDownRight size={12}/>} {change}<em> from Supabase</em></small></article>;
 }
