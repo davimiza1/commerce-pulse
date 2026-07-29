@@ -23,6 +23,9 @@ The current version is a polished frontend prototype. It uses realistic sample d
 - Responsive desktop and mobile layouts
 - Collapsible mobile navigation
 - Light and dark themes
+- Supabase email and password authentication
+- Registration, login, password-reset, and logout flows
+- Protected dashboard routing and persistent sessions
 - Toast feedback for dashboard actions
 - Social sharing preview image and metadata
 
@@ -38,6 +41,7 @@ The current version is a polished frontend prototype. It uses realistic sample d
 | CSS | Responsive layout, visual system, themes, and animations |
 | GitHub | Source control and project repository |
 | Vercel | Production hosting and automatic deployments |
+| Supabase | Authentication, user sessions, and future database services |
 
 ## 5. Application structure
 
@@ -129,7 +133,6 @@ No paid service is required for the current demo. It runs on Vercel's Hobby plan
 - Dashboard data is static and stored in the frontend.
 - Sidebar sections provide interaction feedback but are not separate pages.
 - Export actions show feedback but do not yet generate downloadable reports.
-- There is no authentication or user account.
 - Data changes are not persisted.
 - There is no live Shopify, WooCommerce, or payment-platform integration.
 
@@ -143,15 +146,20 @@ No paid service is required for the current demo. It runs on Vercel's Hobby plan
 - GitHub repository
 - Production deployment
 
-### Phase 2: Convert the prototype into a full-stack application
+### Phase 2: Authentication — complete
 
 - Add authentication
 - Add protected dashboard routes
+- Add production callback configuration
+- Configure Vercel environment variables
+
+### Phase 3: Convert the prototype into a data-backed application
+
 - Move mock data into a database
 - Add create, update, and delete operations for products and orders
 - Build real export functionality
 
-### Phase 3: Production-level enhancements
+### Phase 4: Production-level enhancements
 
 - Add role-based access
 - Add store integrations or a documented demo API
@@ -170,4 +178,3 @@ When presenting the project, explain that it demonstrates:
 - Creating accessible, reusable interface patterns
 - Configuring GitHub-based continuous deployment
 - Taking a project from concept to a live production URL
-
