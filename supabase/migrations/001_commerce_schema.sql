@@ -38,6 +38,11 @@ alter table public.customers enable row level security;
 alter table public.products enable row level security;
 alter table public.orders enable row level security;
 
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on public.customers to authenticated;
+grant select, insert, update, delete on public.products to authenticated;
+grant select, insert, update, delete on public.orders to authenticated;
+
 create policy "customers_owner_access" on public.customers
   for all to authenticated
   using ((select auth.uid()) = owner_id)
