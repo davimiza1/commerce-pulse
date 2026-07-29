@@ -22,7 +22,16 @@ A premium e-commerce analytics dashboard that helps store owners understand reve
 - Recharts for data visualization
 - Lucide React icons
 - Responsive CSS Grid and Flexbox
-- Vinext and Cloudflare-compatible production build
+- Vercel-compatible Next.js production build
+
+## Documentation
+
+Read the complete [project documentation](PROJECT_DOCUMENTATION.md) for the architecture, features, data model, deployment workflow, limitations, and development roadmap.
+
+## Live project
+
+- Production: https://commerce-pulse-362mf1bjv-md-automation.vercel.app
+- Repository: https://github.com/davimiza1/commerce-pulse
 
 ## Run locally
 
